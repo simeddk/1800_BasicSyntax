@@ -1,2 +1,1 @@
-Hell C++ World
-Phyton No 1
+Hello C++ World
