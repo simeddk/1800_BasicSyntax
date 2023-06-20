@@ -19,9 +19,16 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-private:
+private: //Axis Event
 	void OnMoveForward(float Axis);
 	void OnMoveRight(float Axis);
+
+	void OnHorizontalLook(float Axis);
+	void OnVerticalLook(float Axis);
+
+private: //Action Event
+	void OnSprint();
+	void OffSprint();
 
 private:
 	UPROPERTY(VisibleDefaultsOnly)
