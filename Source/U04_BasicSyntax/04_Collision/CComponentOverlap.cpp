@@ -13,6 +13,8 @@ ACComponentOverlap::ACComponentOverlap()
 
 void ACComponentOverlap::BeginPlay()
 {
+	Super::BeginPlay();
+
 	PointLight->SetVisibility(false);
 
 	Box->OnComponentBeginOverlap.AddDynamic(this, &ACComponentOverlap::BeginOverlap);
