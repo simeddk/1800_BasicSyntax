@@ -1,5 +1,11 @@
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Engine/World.h"
+
+//-----------------------------------------------------------------------------
+//Macros
+//-----------------------------------------------------------------------------
 #define CheckNull(p) { if (p == nullptr) return; }
 #define CheckNullResult(p, result) { if (p == nullptr) return result; }
 
@@ -9,9 +15,30 @@
 #define CheckFalse(p) { if (p == false) return; }
 #define CheckFalseResult(p, result) { if (p == false) return result; }
 
+//-----------------------------------------------------------------------------
+//CHelpers
+//-----------------------------------------------------------------------------
 class U04_BASICSYNTAX_API CHelpers
 {
 public:
+	template<typename T>
+	static void GetAsset(T** OutAsset, FString InPath)
+	{
+		ConstructorHelpers::FObjectFinder<T> asset(*InPath);
+		verifyf(asset.Succeeded(), L"Asset Not Found");
+		
+		*OutAsset = asset.Object;
+	}
+
+	template<typename T>
+	static void GetAssetDynamic(T** OutAsset, FString InPath)
+	{
+		T* asset = Cast<T>(StaticLoadObject(T::StaticClass(), nullptr, *InPath));
+		verifyf(!!asset, L"Asset Not Found");
+
+		*OutAsset = asset;
+	}
+
 	template<typename T>
 	static void CreateSceneComponent(AActor* InActor, T** OutComp, FName InName, USceneComponent* InParent = nullptr)
 	{
