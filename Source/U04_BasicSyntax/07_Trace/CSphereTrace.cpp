@@ -36,22 +36,40 @@ void ACSphereTrace::Explosion(AActor* OverlappedActor, AActor* OtherActor)
 
 	TArray<AActor*> ignores;
 
-	//Todo. HitResult, IgnoreSelf
-	//if (UKismetSystemLibrary::SphereTraceMultiForObjects
-	//(
-	//	GetWorld(),
-	//	start,
-	//	end,
-	//	1000,
-	//	objectTypes,
-	//	false,
-	//	ignores,
-	//	EDrawDebugTrace::ForDuration,
-	//	
-	//	
-	//))
-	//{
-	//	
-	//}
+	TArray<FHitResult> hitResults;
+	if (UKismetSystemLibrary::SphereTraceMultiForObjects
+	(
+		GetWorld(),
+		start,
+		end,
+		1000,
+		objectTypes,
+		false,
+		ignores,
+		EDrawDebugTrace::ForDuration,
+		hitResults,
+		true
+	))
+	{
+		Particle->ResetParticles();
+		Particle->SetActive(true);
+
+
+		for (const FHitResult& hitResult : hitResults)
+		{
+			UStaticMeshComponent* meshComp = Cast<UStaticMeshComponent>(hitResult.GetActor()->GetRootComponent());
+			if (!!meshComp)
+			{
+				meshComp->AddRadialImpulse
+				(
+					GetActorLocation(),
+					1000,
+					15e+6f / meshComp->GetMass(),
+					ERadialImpulseFalloff::RIF_Linear
+				);
+			}
+		}
+	}
+	
 }
 

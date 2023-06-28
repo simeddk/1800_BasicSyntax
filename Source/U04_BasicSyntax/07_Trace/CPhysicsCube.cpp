@@ -14,5 +14,7 @@ ACPhysicsCube::ACPhysicsCube()
 	UMaterial* materailAsset;
 	CHelpers::GetAsset(&materailAsset, "Material'/Game/StaticMeshes/Textures/MAT_Box.MAT_Box'");
 	Mesh->SetMaterial(0, materailAsset);
+
+	Mesh->SetMassOverrideInKg(NAME_None, 50.f);
 }
 
