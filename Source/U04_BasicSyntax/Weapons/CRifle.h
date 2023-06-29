@@ -14,6 +14,14 @@ public:
 
 	static ACRifle* Spawn(class UWorld* InWorld, class ACharacter* InOwner);
 
+	FORCEINLINE bool IsEquipped() { return bEquipped; }
+	FORCEINLINE bool IsEquipping() { return bEquipping; }
+
+public:
+	void Equip(); //Play Grab Montage
+	void Unequip(); //Play Ungrab Montage
+	
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -27,6 +35,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Socket")
 		FName HandSocket = "Hand_Rifle";
 
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+		class UAnimMontage* GrabMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+		class UAnimMontage* UngrabMontage;
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USkeletalMeshComponent* Mesh;
@@ -34,4 +48,6 @@ private:
 private:
 	class ACharacter* OwnerCharacter;
 
+	bool bEquipped;		//Is On Hand Socket
+	bool bEquipping;	//Is Montage Playing
 };

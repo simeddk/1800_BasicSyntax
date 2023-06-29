@@ -2,15 +2,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "IRifle.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
-class U04_BASICSYNTAX_API ACPlayer : public ACharacter
+class U04_BASICSYNTAX_API ACPlayer : public ACharacter, public IIRifle
 {
 	GENERATED_BODY()
 
 public:
 	ACPlayer();
+
+	FORCEINLINE class ACRifle* GetRifle() override { return Rifle; }
 
 	UFUNCTION(BlueprintCallable)
 		void SetColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
@@ -48,4 +51,6 @@ private:
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
+
+	class ACRifle* Rifle;
 };

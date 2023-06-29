@@ -7,6 +7,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "CAnimInstance.h"
+#include "Weapons/CRifle.h"
 
 ACPlayer::ACPlayer()
 {
@@ -64,6 +65,9 @@ void ACPlayer::BeginPlay()
 	//Set Dynamic Material to Mesh Comp
 	GetMesh()->SetMaterial(0, BodyMaterial);
 	GetMesh()->SetMaterial(1, LogoMaterial);
+
+	//Spawn Rifle
+	Rifle = ACRifle::Spawn(GetWorld(), this);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -128,6 +132,13 @@ void ACPlayer::OffSprint()
 
 void ACPlayer::OnRifle()
 {
+	if (Rifle->IsEquipped() == true)
+	{
+		Rifle->Unequip();
+		return;
+	}
+
+	Rifle->Equip();
 }
 
 void ACPlayer::SetColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
