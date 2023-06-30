@@ -1,13 +1,31 @@
 #include "CAnimNotifyState_Equip.h"
+#include "Global.h"
+#include "Chracters/IRifle.h"
+#include "Weapons/CRifle.h"
 
-void ACAnimNotifyState_Equip::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
+FString UCAnimNotifyState_Equip::GetNotifyName_Implementation() const
 {
-	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
-	//Attach To Hand Socket
+	return "Equip";
 }
 
-void ACAnimNotifyState_Equip::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UCAnimNotifyState_Equip::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
+{
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
+	CheckNull(MeshComp);
+	
+	IIRifle* rifleCharacter = Cast<IIRifle>(MeshComp->GetOwner());
+	CheckNull(rifleCharacter);
+
+	rifleCharacter->GetRifle()->Begin_Equip();
+}
+
+void UCAnimNotifyState_Equip::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	Super::NotifyEnd(MeshComp, Animation);
-	//bEquipping -> false
+	CheckNull(MeshComp);
+
+	IIRifle* rifleCharacter = Cast<IIRifle>(MeshComp->GetOwner());
+	CheckNull(rifleCharacter);
+
+	rifleCharacter->GetRifle()->End_Equip();
 }

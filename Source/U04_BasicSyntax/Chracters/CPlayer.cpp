@@ -92,6 +92,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &ACPlayer::OffSprint);
 
 	PlayerInputComponent->BindAction("Rifle", EInputEvent::IE_Pressed, this, &ACPlayer::OnRifle);
+
+	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
+	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -134,6 +137,8 @@ void ACPlayer::OnRifle()
 {
 	if (Rifle->IsEquipped() == true)
 	{
+		OffAim();
+
 		Rifle->Unequip();
 		return;
 	}
@@ -145,6 +150,38 @@ void ACPlayer::SetColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
 {
 	BodyMaterial->SetVectorParameterValue("BodyColor", InBodyColor);
 	LogoMaterial->SetVectorParameterValue("BodyColor", InLogoColor);
+}
+
+void ACPlayer::OnAim()
+{
+	CheckFalse(Rifle->IsEquipped());
+	CheckTrue(Rifle->IsEquipping());
+
+	SpringArm->TargetArmLength = 100.f;
+	SpringArm->SocketOffset = FVector(0, 30, 10);
+
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	ZoomIn();
+
+	Rifle->Begin_Aiming();
+}
+
+void ACPlayer::OffAim()
+{
+	CheckFalse(Rifle->IsEquipped());
+	CheckTrue(Rifle->IsEquipping());
+
+	SpringArm->TargetArmLength = 200.f;
+	SpringArm->SocketOffset = FVector::ZeroVector;
+
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	ZoomOut();
+
+	Rifle->End_Aiming();
 }
 
 void ACPlayer::SetColor_Reset()

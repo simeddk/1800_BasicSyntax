@@ -41,11 +41,22 @@ private: //Action Event
 
 	void OnRifle();
 
+	void OnAim();
+	void OffAim();
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+		void ZoomIn();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void ZoomOut();
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleDefaultsOnly)
+protected:
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 		class UCameraComponent* Camera;
 
 private:

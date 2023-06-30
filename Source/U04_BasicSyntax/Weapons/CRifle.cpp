@@ -24,18 +24,6 @@ ACRifle* ACRifle::Spawn(UWorld* InWorld, ACharacter* InOwner)
 	return InWorld->SpawnActor<ACRifle>(param);
 }
 
-void ACRifle::Equip()
-{
-	CheckTrue(bEquipping);
-
-	bEquipping = true;
-	OwnerCharacter->PlayAnimMontage(GrabMontage);
-}
-
-void ACRifle::Unequip()
-{
-}
-
 void ACRifle::BeginPlay()
 {
 	Super::BeginPlay();
@@ -50,4 +38,55 @@ void ACRifle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void ACRifle::Begin_Aiming()
+{
+	bAiming = true; 
+}
+
+void ACRifle::End_Aiming()
+{ 
+	bAiming = false; 
+}
+
+void ACRifle::Equip()
+{
+	CheckTrue(bEquipping);
+
+	bEquipping = true;
+	OwnerCharacter->PlayAnimMontage(GrabMontage);
+}
+
+void ACRifle::Begin_Equip()
+{
+	bEquipped = true;
+	
+	AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), HandSocket);
+}
+
+void ACRifle::End_Equip()
+{
+	bEquipping = false;
+}
+
+void ACRifle::Unequip()
+{
+	CheckTrue(bEquipping);
+
+	bEquipping = true;
+	OwnerCharacter->PlayAnimMontage(UngrabMontage);
+}
+
+void ACRifle::Begin_Unequip()
+{
+	bEquipped = false;
+
+	AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), HolsterSocket);
+}
+
+void ACRifle::End_Unequip()
+{
+	bEquipping = false;
+}
+
 

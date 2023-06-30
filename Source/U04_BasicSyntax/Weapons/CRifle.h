@@ -16,10 +16,19 @@ public:
 
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsEquipping() { return bEquipping; }
+	FORCEINLINE bool IsAiming() { return bAiming; }
+
+	void Begin_Aiming();
+	void End_Aiming();
 
 public:
 	void Equip(); //Play Grab Montage
+	void Begin_Equip();
+	void End_Equip();
+
 	void Unequip(); //Play Ungrab Montage
+	void Begin_Unequip();
+	void End_Unequip();
 	
 
 protected:
@@ -50,4 +59,5 @@ private:
 
 	bool bEquipped;		//Is On Hand Socket
 	bool bEquipping;	//Is Montage Playing
+	bool bAiming;		//Is R-Button Pressed
 };
