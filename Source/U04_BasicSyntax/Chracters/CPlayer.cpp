@@ -8,6 +8,7 @@
 #include "Materials/MaterialInstanceConstant.h"
 #include "CAnimInstance.h"
 #include "Weapons/CRifle.h"
+#include "Widgets/CUserWidget_Aim.h"
 
 ACPlayer::ACPlayer()
 {
@@ -44,6 +45,9 @@ ACPlayer::ACPlayer()
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
+
+	//Get Widget Class
+	CHelpers::GetClass(&AimWidgetClass, "WidgetBlueprint'/Game/Widgets/WB_Aim.WB_Aim_C'");
 }
 
 
@@ -68,6 +72,11 @@ void ACPlayer::BeginPlay()
 
 	//Spawn Rifle
 	Rifle = ACRifle::Spawn(GetWorld(), this);
+
+	//Create Widget
+	AimWidget = CreateWidget<UCUserWidget_Aim, APlayerController>(GetController<APlayerController>(), AimWidgetClass);
+	AimWidget->AddToViewport();
+	
 }
 
 void ACPlayer::Tick(float DeltaTime)

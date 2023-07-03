@@ -60,8 +60,14 @@ protected:
 		class UCameraComponent* Camera;
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UCUserWidget_Aim> AimWidgetClass;
+
+private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
 
 	class ACRifle* Rifle;
+
+	class UCUserWidget_Aim* AimWidget;
 };

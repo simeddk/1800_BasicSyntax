@@ -40,6 +40,14 @@ public:
 	}
 
 	template<typename T>
+	static void GetClass(TSubclassOf<T>* OutClass, FString InPath)
+	{
+		ConstructorHelpers::FClassFinder<T> asset(*InPath);
+		verifyf(asset.Succeeded(), L"Class Not Found") //Todo
+		*OutClass = asset.Class;
+	}
+
+	template<typename T>
 	static void CreateSceneComponent(AActor* InActor, T** OutComp, FName InName, USceneComponent* InParent = nullptr)
 	{
 		*OutComp = InActor->CreateDefaultSubobject<T>(InName);
