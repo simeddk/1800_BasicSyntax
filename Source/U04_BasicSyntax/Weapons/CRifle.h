@@ -29,6 +29,12 @@ public:
 	void Unequip(); //Play Ungrab Montage
 	void Begin_Unequip();
 	void End_Unequip();
+
+	void Begin_Fire();
+	void End_Fire();
+
+	UFUNCTION()
+		void Firing();
 	
 
 protected:
@@ -57,7 +63,10 @@ private:
 private:
 	class ACharacter* OwnerCharacter;
 
+	class UStaticMeshComponent* OtherComp;
+
 	bool bEquipped;		//Is On Hand Socket
 	bool bEquipping;	//Is Montage Playing
 	bool bAiming;		//Is R-Button Pressed
+	bool bFiring;		//Is L-Button Pressed
 };

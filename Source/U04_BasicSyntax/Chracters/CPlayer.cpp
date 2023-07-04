@@ -76,7 +76,7 @@ void ACPlayer::BeginPlay()
 	//Create Widget
 	AimWidget = CreateWidget<UCUserWidget_Aim, APlayerController>(GetController<APlayerController>(), AimWidgetClass);
 	AimWidget->AddToViewport();
-	
+	AimWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -104,6 +104,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
+
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ACPlayer::OnFire);
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ACPlayer::OffFire);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -175,6 +178,8 @@ void ACPlayer::OnAim()
 	ZoomIn();
 
 	Rifle->Begin_Aiming();
+
+	AimWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
 void ACPlayer::OffAim()
@@ -191,10 +196,45 @@ void ACPlayer::OffAim()
 	ZoomOut();
 
 	Rifle->End_Aiming();
+
+	AimWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ACPlayer::OnFire()
+{
+	Rifle->Begin_Fire();
+}
+
+void ACPlayer::OffFire()
+{
+	Rifle->End_Fire();
 }
 
 void ACPlayer::SetColor_Reset()
 {
 	FLinearColor origin = FLinearColor(0.450980f, 0.403922f, 0.360784f);
 	SetColor(origin, origin);
+}
+
+void ACPlayer::GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutDirection)
+{
+	OutDirection = Camera->GetForwardVector();
+
+	FTransform transform = Camera->GetComponentToWorld();
+	FVector cameraLocation = transform.GetLocation();
+	OutAimStart = cameraLocation + OutDirection * 180.f;
+
+	FVector coneDirection = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(OutDirection, 0.2f);
+	coneDirection *= 3000.f;
+	OutAimEnd = cameraLocation + coneDirection;
+}
+
+void ACPlayer::OnTarget()
+{
+	AimWidget->OnTarget();
+}
+
+void ACPlayer::OffTarget()
+{
+	AimWidget->OffTarget();
 }

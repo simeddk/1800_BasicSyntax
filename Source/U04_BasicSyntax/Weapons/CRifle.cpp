@@ -1,6 +1,8 @@
 #include "CRifle.h"
 #include "Global.h"
 #include "GameFramework/Character.h"
+#include "Engine/StaticMeshActor.h"
+#include "Chracters/IRifle.h"
 
 ACRifle::ACRifle()
 {
@@ -36,7 +38,51 @@ void ACRifle::BeginPlay()
 void ACRifle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	CheckFalse(bAiming);
 
+	//Get Aim Info
+	IIRifle* rifleCharacter = Cast<IIRifle>(OwnerCharacter);
+	CheckNull(rifleCharacter);
+
+	FVector start, end, direction;
+	rifleCharacter->GetAimInfo(start, end, direction);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.f, 0, 3.f);
+
+	//LineTrace(AimWidget)
+	FCollisionQueryParams param;
+	param.AddIgnoredActor(this);
+	param.AddIgnoredActor(OwnerCharacter);
+
+	FHitResult hitResult;
+	if (GetWorld()->LineTraceSingleByChannel
+	(
+		hitResult,
+		start,
+		end,
+		ECollisionChannel::ECC_PhysicsBody,
+		param
+	))
+	{
+		AStaticMeshActor* smActor = Cast<AStaticMeshActor>(hitResult.GetActor());
+		if (!!smActor)
+		{
+			UStaticMeshComponent* smComp = Cast<UStaticMeshComponent>(smActor->GetRootComponent());
+			if (!!smComp)
+			{
+				if (smComp->BodyInstance.bSimulatePhysics == true)
+				{
+					OtherComp = smComp;
+
+					rifleCharacter->OnTarget();
+					return;
+				}
+			}
+		}
+	}
+
+	OtherComp = nullptr;
+	rifleCharacter->OffTarget();
 }
 
 void ACRifle::Begin_Aiming()
@@ -87,6 +133,40 @@ void ACRifle::Begin_Unequip()
 void ACRifle::End_Unequip()
 {
 	bEquipping = false;
+}
+
+void ACRifle::Begin_Fire()
+{
+	CheckFalse(bEquipped);
+	CheckTrue(bEquipping);
+	CheckFalse(bAiming);
+	CheckTrue(bFiring);
+
+	bFiring = true;
+
+	Firing();
+}
+
+void ACRifle::End_Fire()
+{
+	bFiring = false;
+}
+
+void ACRifle::Firing()
+{
+	FVector direction;
+
+	//Add Impulse
+	if (!!OtherComp)
+	{
+		FVector start = OwnerCharacter->GetActorLocation();
+		FVector target = OtherComp->GetComponentToWorld().GetLocation();
+
+		direction = target - start;
+		direction.Normalize();
+
+		OtherComp->AddImpulseAtLocation(direction * 3000.f, start);
+	}
 }
 
 

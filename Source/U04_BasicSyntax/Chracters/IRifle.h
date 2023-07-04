@@ -16,4 +16,8 @@ class U04_BASICSYNTAX_API IIRifle
 
 public:
 	virtual class ACRifle* GetRifle() = 0;
+	virtual void GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutDirection) = 0;
+
+	virtual void OnTarget() {}
+	virtual void OffTarget() {}
 };

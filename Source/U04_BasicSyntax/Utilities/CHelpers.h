@@ -43,7 +43,7 @@ public:
 	static void GetClass(TSubclassOf<T>* OutClass, FString InPath)
 	{
 		ConstructorHelpers::FClassFinder<T> asset(*InPath);
-		verifyf(asset.Succeeded(), L"Class Not Found") //Todo
+		verifyf(asset.Succeeded(), L"Class Not Found");
 		*OutClass = asset.Class;
 	}
 

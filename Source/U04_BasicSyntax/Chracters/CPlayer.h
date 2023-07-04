@@ -14,6 +14,10 @@ public:
 	ACPlayer();
 
 	FORCEINLINE class ACRifle* GetRifle() override { return Rifle; }
+	void GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutDirection) override;
+
+	void OnTarget() override;
+	void OffTarget() override;
 
 	UFUNCTION(BlueprintCallable)
 		void SetColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
@@ -44,6 +48,9 @@ private: //Action Event
 	void OnAim();
 	void OffAim();
 
+	void OnFire();
+	void OffFire();
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 		void ZoomIn();
@@ -70,4 +77,5 @@ private:
 	class ACRifle* Rifle;
 
 	class UCUserWidget_Aim* AimWidget;
+	
 };
