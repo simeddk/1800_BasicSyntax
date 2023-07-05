@@ -56,6 +56,24 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 		class UAnimMontage* UngrabMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+		TSubclassOf<class UCameraShake> FireShakeClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
+		TSubclassOf<class ACBullet> BulletClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+		class UParticleSystem* MuzzleParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+		class UParticleSystem* EjectParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+		class UParticleSystem* ImpactParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+		class USoundCue* FireSound;
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USkeletalMeshComponent* Mesh;

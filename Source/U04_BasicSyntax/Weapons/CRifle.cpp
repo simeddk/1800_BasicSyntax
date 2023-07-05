@@ -2,7 +2,11 @@
 #include "Global.h"
 #include "GameFramework/Character.h"
 #include "Engine/StaticMeshActor.h"
+#include "Particles/ParticleSystem.h"
+#include "Sound/SoundCue.h"
+#include "Chracters/CPlayer.h"
 #include "Chracters/IRifle.h"
+#include "CBullet.h"
 
 ACRifle::ACRifle()
 {
@@ -16,6 +20,14 @@ ACRifle::ACRifle()
 
 	CHelpers::GetAsset(&GrabMontage, "AnimMontage'/Game/Character/Animations/Rifle/Rifle_Grab_Montage.Rifle_Grab_Montage'");
 	CHelpers::GetAsset(&UngrabMontage, "AnimMontage'/Game/Character/Animations/Rifle/Rifle_Ungrab_Montage.Rifle_Ungrab_Montage'");
+
+	CHelpers::GetClass(&FireShakeClass, "Blueprint'/Game/Player/BP_FireShake.BP_FireShake_C'");
+	CHelpers::GetClass(&BulletClass, "Blueprint'/Game/Player/BP_CBullet.BP_CBullet_C'");
+
+	CHelpers::GetAsset(&MuzzleParticle, "ParticleSystem'/Game/Particles_Rifle/Particles/VFX_Muzzleflash.VFX_Muzzleflash'");
+	CHelpers::GetAsset(&EjectParticle, "ParticleSystem'/Game/Particles_Rifle/Particles/VFX_Eject_bullet.VFX_Eject_bullet'");
+	CHelpers::GetAsset(&ImpactParticle, "ParticleSystem'/Game/Particles_Rifle/Particles/VFX_Impact_Default.VFX_Impact_Default'");
+	CHelpers::GetAsset(&FireSound, "SoundCue'/Game/Sounds/S_RifleShoot_Cue.S_RifleShoot_Cue'");
 }
 
 ACRifle* ACRifle::Spawn(UWorld* InWorld, ACharacter* InOwner)
@@ -154,19 +166,44 @@ void ACRifle::End_Fire()
 
 void ACRifle::Firing()
 {
-	FVector direction;
+	//Get AimInfo
+	FVector start, end, direction;
+	
+	IIRifle* rifleCharacter = Cast<IIRifle>(OwnerCharacter);
+	CheckNull(rifleCharacter);
+	rifleCharacter->GetAimInfo(start, end, direction);
 
 	//Add Impulse
 	if (!!OtherComp)
 	{
-		FVector start = OwnerCharacter->GetActorLocation();
-		FVector target = OtherComp->GetComponentToWorld().GetLocation();
+		FVector ownerLocation = OwnerCharacter->GetActorLocation();
+		FVector targetLocation = OtherComp->GetComponentToWorld().GetLocation();
+		FVector targetDirection;
 
-		direction = target - start;
-		direction.Normalize();
+		targetDirection = targetLocation - ownerLocation;
+		targetDirection.Normalize();
 
-		OtherComp->AddImpulseAtLocation(direction * 3000.f, start);
+		OtherComp->AddImpulseAtLocation(targetDirection * 3000.f, ownerLocation);
 	}
+
+	//Play CameraShake
+	ACPlayer* player = Cast<ACPlayer>(OwnerCharacter);
+	if (!!player)
+	{
+		APlayerController* controller = player->GetController<APlayerController>();
+		if (!!controller)
+			controller->PlayerCameraManager->PlayCameraShake(FireShakeClass);
+	}
+
+	//Spawn Bullet
+	FVector muzzleLocation = Mesh->GetSocketLocation("MuzzleFlash");
+	if (!!BulletClass)
+		GetWorld()->SpawnActor<ACBullet>(BulletClass, muzzleLocation, direction.Rotation());
+
+	//Play Effect
+	UGameplayStatics::SpawnEmitterAttached(MuzzleParticle, Mesh, "MuzzleFlash");
+	UGameplayStatics::SpawnEmitterAttached(EjectParticle, Mesh, "EjectBullet");
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, muzzleLocation);
 }
 
 
