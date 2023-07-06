@@ -51,6 +51,8 @@ private: //Action Event
 	void OnFire();
 	void OffFire();
 
+	void OnRapid();
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 		void ZoomIn();
@@ -70,6 +72,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class UCUserWidget_Aim> AimWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UCUserWidget_Rapid> RapidWidgetClass;
+
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
@@ -77,5 +82,6 @@ private:
 	class ACRifle* Rifle;
 
 	class UCUserWidget_Aim* AimWidget;
+	class UCUserWidget_Rapid* RapidWidget;
 	
 };

@@ -9,6 +9,7 @@
 #include "CAnimInstance.h"
 #include "Weapons/CRifle.h"
 #include "Widgets/CUserWidget_Aim.h"
+#include "Widgets/CUserWidget_Rapid.h"
 
 ACPlayer::ACPlayer()
 {
@@ -48,6 +49,7 @@ ACPlayer::ACPlayer()
 
 	//Get Widget Class
 	CHelpers::GetClass(&AimWidgetClass, "WidgetBlueprint'/Game/Widgets/WB_Aim.WB_Aim_C'");
+	CHelpers::GetClass(&RapidWidgetClass, "WidgetBlueprint'/Game/Widgets/WB_Rapid.WB_Rapid_C'");
 }
 
 
@@ -77,6 +79,9 @@ void ACPlayer::BeginPlay()
 	AimWidget = CreateWidget<UCUserWidget_Aim, APlayerController>(GetController<APlayerController>(), AimWidgetClass);
 	AimWidget->AddToViewport();
 	AimWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	RapidWidget = CreateWidget<UCUserWidget_Rapid, APlayerController>(GetController<APlayerController>(), RapidWidgetClass);
+	RapidWidget->AddToViewport();
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -107,6 +112,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ACPlayer::OnFire);
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ACPlayer::OffFire);
+
+	PlayerInputComponent->BindAction("Rapid", EInputEvent::IE_Pressed, this, &ACPlayer::OnRapid);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -172,8 +179,8 @@ void ACPlayer::OnAim()
 	SpringArm->TargetArmLength = 100.f;
 	SpringArm->SocketOffset = FVector(0, 30, 10);
 
-	bUseControllerRotationYaw = true;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
+	//bUseControllerRotationYaw = true;
+	//GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	ZoomIn();
 
@@ -190,8 +197,8 @@ void ACPlayer::OffAim()
 	SpringArm->TargetArmLength = 200.f;
 	SpringArm->SocketOffset = FVector::ZeroVector;
 
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	//bUseControllerRotationYaw = false;
+	//GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	ZoomOut();
 
@@ -208,6 +215,15 @@ void ACPlayer::OnFire()
 void ACPlayer::OffFire()
 {
 	Rifle->End_Fire();
+}
+
+void ACPlayer::OnRapid()
+{
+	CheckTrue(Rifle->IsFiring());
+
+	Rifle->ToggleRapid();
+
+	Rifle->IsRapid() ? RapidWidget->OnRapid() : RapidWidget->OffRapid();
 }
 
 void ACPlayer::SetColor_Reset()

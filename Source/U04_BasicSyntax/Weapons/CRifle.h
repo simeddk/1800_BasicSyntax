@@ -17,6 +17,9 @@ public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsEquipping() { return bEquipping; }
 	FORCEINLINE bool IsAiming() { return bAiming; }
+	FORCEINLINE bool IsFiring() { return bFiring; }
+	FORCEINLINE bool IsRapid() { return bRapid; }
+	FORCEINLINE void ToggleRapid() { bRapid = !bRapid; }
 
 	void Begin_Aiming();
 	void End_Aiming();
@@ -74,6 +77,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 		class USoundCue* FireSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+		class UMaterial* Decal;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+		float PitchSpeed = 0.25f;
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USkeletalMeshComponent* Mesh;
@@ -87,4 +96,9 @@ private:
 	bool bEquipping;	//Is Montage Playing
 	bool bAiming;		//Is R-Button Pressed
 	bool bFiring;		//Is L-Button Pressed
+	bool bRapid;		//Is Auto Firing
+
+	FTimerHandle RapidTimer;
+
+	float CurrentPitch;
 };
