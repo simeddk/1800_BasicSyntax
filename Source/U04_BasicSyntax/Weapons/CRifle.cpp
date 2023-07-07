@@ -54,9 +54,6 @@ void ACRifle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	//Todo. Áö¿ì±â
-	CheckFalse(bAiming);
-
 	//Get Aim Info
 	IIRifle* rifleCharacter = Cast<IIRifle>(OwnerCharacter);
 	CheckNull(rifleCharacter);
@@ -140,6 +137,9 @@ void ACRifle::Unequip()
 
 	bEquipping = true;
 	OwnerCharacter->PlayAnimMontage(UngrabMontage);
+
+	if (bFiring == true)
+		End_Fire();
 }
 
 void ACRifle::Begin_Unequip()
